@@ -13,7 +13,7 @@ def grid(c, grid_height, grid_width, square_size):
 
 def setup(grid_height, grid_width, mines_num, square_size=50):
     root = Tk()  # Основное окно программы
-    root.title("Minesweep")
+    root.title("Minesweep Game")
     c = Canvas(root, width=grid_width * square_size,
                height=grid_height * square_size)  # Задаем область на которой будем рисовать
     c.pack()

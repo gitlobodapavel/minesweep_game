@@ -1,6 +1,6 @@
-import game
+import game, auth
 
 if __name__ == '__main__':
-    game.setup(9, 9, 18)
+    auth.start()
 else:
     pass
