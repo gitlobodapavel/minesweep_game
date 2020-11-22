@@ -1,6 +1,5 @@
 from tkinter import *
-import register as registration_module
-import login as login_module
+import login as login_module, register as registration_module
 
 
 def start():

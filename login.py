@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
-import game
+import menu
 import sqlite3_connect_db
 
 
@@ -19,7 +19,7 @@ def login():
             if rows:
                 if rows[0][0] == login_data and rows[0][1] == password_data:
                     root.destroy()
-                    game.setup(9, 9, 12)
+                    menu.display()
                 else:
                     messagebox.showinfo("Minesweeper Game", 'Incorrect login or password !')
             else:
