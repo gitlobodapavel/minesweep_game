@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import random
+import time
 
 
 def grid(c, grid_height, grid_width, square_size):
@@ -70,18 +71,58 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         return data
 
     def print_neighbors(ids):
-        neighbors = generate_neighbors(ids)
-        around = check_mines(neighbors)
-        if around:
-            # мины есть, рисуем
+        ids_neigh = generate_neighbors(ids)  # Получаем все соседние клетки
+        around = check_mines(ids_neigh)  # высчитываем количество мин вокруг нажатой клетки
+        c.itemconfig(ids, fill="green")  # окрашиваем клетку в зеленый
+
+        # Если вокруг мин нету
+        if around == 0:
+            # Создаем список соседних клеток
+            neigh_list = list(ids_neigh)
+            # Пока в списке соседей есть клетки
+            while len(neigh_list) > 0:
+                # Получаем клетку
+                item = neigh_list.pop()
+                # Окрашиваем ее в зеленый цвет
+                c.itemconfig(item, fill="green")
+                # Получаем соседение клетки данной клетки
+                item_neigh = generate_neighbors(item)
+                # Получаем количество мин в соседних клетках
+                item_around = check_mines(item_neigh)
+                # Если в соседних клетках есть мины
+                if item_around > 0:
+                    # Делаем эту проверку, чтобы писать по нескольку раз на той же клетке
+                    if item not in clicked:
+                        # Получаем координаты этой клетки
+                        x1, y1, x2, y2 = c.coords(item)
+                        # Пишем на клетке количество мин вокруг
+                        c.create_text(x1 + square_size / 2,
+                                      y1 + square_size / 2,
+                                      text=str(item_around),
+                                      font="Arial {}".format(int(square_size / 2)),
+                                      fill='yellow')
+                # Если в соседних клетках мин нету
+                else:
+                    # Добавляем соседние клетки данной клетки в общий список
+                    neigh_list.extend(set(item_neigh).difference(clicked))
+                    # Убираем повторяющиеся элементы из общего списка
+                    neigh_list = list(set(neigh_list))
+                # Добавляем клетку в нажатые
+                clicked.add(item)
+        # Если мины вокруг есть
+        else:
+            # Высчитываем координаты клетки
             x1, y1, x2, y2 = c.coords(ids)
+            # Пишем количество мин вокруг
             c.create_text(x1 + square_size / 2,
                           y1 + square_size / 2,
-                          text=str(around), font="Arial {}".format(int(square_size / 2)), fill='yellow')
-        else:
-            pass
+                          text=str(around),
+                          font="Arial {}".format(int(square_size / 2)),
+                          fill='yellow')
 
     def gameover():
+        game_time = time.time() - start_time
+        print(game_time)
         messagebox.showwarning(title='Oops!', message='Game Over !')
         root.destroy()
 
@@ -121,6 +162,8 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         else:
             clicked.remove(ids)
             c.itemconfig(CURRENT, fill="gray")
+
+    start_time = time.time()
 
     c.bind("<Button-1>", click)
     c.bind("<Button-3>", mark_mine)
