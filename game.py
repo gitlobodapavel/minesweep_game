@@ -80,7 +80,10 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
                           text=str(around), font="Arial {}".format(int(square_size / 2)), fill='yellow')
         else:
             pass
-            # print('MINES: ' + str(check_mines(neighbors)))
+
+    def gameover():
+        messagebox.showwarning(title='Oops!', message='Game Over !')
+        root.destroy()
 
     # events
     def click(event):
@@ -89,8 +92,7 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
             print_neighbors(ids)
         if ids in mines:
             c.itemconfig(CURRENT, fill="red")  # Если кликнули по клетке с миной - красим ее в красный цвет
-            messagebox.showwarning(title='Oops!', message='Game Over !')
-            root.destroy()
+            gameover()
             return 0
 
         elif ids not in clicked:
@@ -133,6 +135,6 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
 
 
 if __name__ == '__main__':
-    pass
+    setup(9, 9, 18)
 else:
     pass
