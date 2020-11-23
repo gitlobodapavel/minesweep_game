@@ -29,45 +29,45 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         # Левая верхняя клетка
         if square == 1:
             data = {grid_height + 1, 2, grid_height + 2}
-            print('left top')
+            # print('left top')
         # Правая нижняя
         elif square == (grid_height * grid_width):
             data = {square - GRID_SIZE, square - 1, square - GRID_SIZE - 1}
-            print('right bottom')
+            # print('right bottom')
         # Левая нижняя
         elif square == grid_height:
             data = {grid_height - 1, grid_height * 2, grid_height * 2 - 1}
-            print('left bottom')
+            # print('left bottom')
         # Верхняя правая
         elif square == (grid_height * grid_width) - grid_height + 1:
             data = {square + 1, square - grid_height, square - grid_height + 1}
-            print('right top')
+            # print('right top')
         # Клетка в левом ряду
         elif square < grid_height:
             data = {square + 1, square - 1, square + GRID_SIZE,
                     square + GRID_SIZE - 1, square + GRID_SIZE + 1}
-            print('left row')
+            # print('left row')
         # Клетка в правом ряду
         elif square > (grid_height * grid_width) - grid_height:
             data = {square + 1, square - 1, square - GRID_SIZE,
                     square - GRID_SIZE - 1, square - GRID_SIZE + 1}
-            print('right row')
+            # print('right row')
         # Клетка в нижнем ряду
         elif square % grid_height == 0:
             data = {square + GRID_SIZE, square - GRID_SIZE, square - 1,
                     square + GRID_SIZE - 1, square - GRID_SIZE - 1}
-            print('bottom row')
+            # print('bottom row')
         # Клетка в верхнем ряду
         elif square % grid_height == 1:
             data = {square + GRID_SIZE, square - GRID_SIZE, square + 1,
                     square + GRID_SIZE + 1, square - GRID_SIZE + 1}
-            print('top row')
+            # print('top row')
         # Любая другая клетка
         else:
             data = {square - 1, square + 1, square - GRID_SIZE, square + GRID_SIZE,
                     square - GRID_SIZE - 1, square - GRID_SIZE + 1,
                     square + GRID_SIZE + 1, square + GRID_SIZE - 1}
-            print('another')
+            # print('another')
         return data
 
     def print_neighbors(ids):
@@ -109,6 +109,7 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
                     neigh_list = list(set(neigh_list))
                 # Добавляем клетку в нажатые
                 clicked.add(item)
+                clear.add(item)
         # Если мины вокруг есть
         else:
             # Высчитываем координаты клетки
@@ -126,11 +127,25 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         messagebox.showwarning(title='Oops!', message='Game Over !')
         root.destroy()
 
+    def check_win():
+        print(len(clear))
+        if (grid_width * grid_height) - len(mines) == len(clear) and len(marked) == len(mines):
+            for mark in marked:
+                if mark not in mines:
+                    return False
+            return True
+
     # events
     def click(event):
         ids = c.find_withtag(CURRENT)[0]  # Определяем по какой клетке кликнули
         if ids not in mines:
             print_neighbors(ids)
+            x1, y1, x2, y2 = c.coords(ids)
+            clear.add(ids)
+            if check_win():
+                messagebox.showwarning(title='Congratulations !', message='You won this game !')
+                root.destroy()
+                return 0
         if ids in mines:
             c.itemconfig(CURRENT, fill="red")  # Если кликнули по клетке с миной - красим ее в красный цвет
             gameover()
@@ -157,8 +172,13 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         # Если мы не кликали по клетке - красим ее в желтый цвет, иначе - в серый
         if ids not in clicked:
             clicked.add(ids)
-            x1, y1, x2, y2 = c.coords(ids)
+            print('MARKED: ' + str(ids))
+            marked.add(ids)
             c.itemconfig(CURRENT, fill="orange")
+            x1, y1, x2, y2 = c.coords(ids)
+            if check_win():
+                messagebox.showwarning(title='Congratulations !', message='You won this game !')
+                root.destroy()
         else:
             clicked.remove(ids)
             c.itemconfig(CURRENT, fill="gray")
@@ -173,6 +193,8 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
 
     mines = set(random.sample(range(1, grid_height*grid_width + 1), mines_num))  # Генерируем мины в случайных позициях
     clicked = set()  # Создаем сет для клеточек, по которым мы кликнули
+    marked = set()  # Set for marked mines
+    clear = set()
 
     root.mainloop()
 
