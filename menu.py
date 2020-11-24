@@ -25,6 +25,13 @@ def display():
         root.destroy()
         statistic.show()
 
+    def get_self_results():
+        root.destroy()
+        statistic.show(game.username)
+
+    def self_results():
+        get_self_results()
+
     root = Tk()
     b1 = Button(text='Easy',
                 width=15, height=3)
@@ -40,9 +47,14 @@ def display():
     b3.config(command=hard)
     b3.pack()
 
-    b4 = Button(text='Results',
+    b4 = Button(text='All Results',
                 width=15, height=3)
     b4.config(command=results)
     b4.pack()
+
+    b5 = Button(text='My Games',
+                width=15, height=3)
+    b5.config(command=self_results)
+    b5.pack()
 
     root.mainloop()
