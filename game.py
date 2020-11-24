@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import time
+import sqlite3_connect_db
 
 
 def grid(c, grid_height, grid_width, square_size):
@@ -122,17 +123,20 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
                           fill='yellow')
 
     def gameover():
-        game_time = time.time() - start_time
-        print(game_time)
         messagebox.showwarning(title='Oops!', message='Game Over !')
+        save_results()
         root.destroy()
 
+    def save_results():
+        sqlite3_connect_db.cursor.execute("INSERT INTO results VALUES (?, ?, ?)", (username, level, time.strftime('%S')))
+        sqlite3_connect_db.conn.commit()
+
     def check_win():
-        print(len(clear))
         if (grid_width * grid_height) - len(mines) == len(clear) and len(marked) == len(mines):
             for mark in marked:
                 if mark not in mines:
                     return False
+            save_results()
             return True
 
     # events
@@ -172,7 +176,6 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         # Если мы не кликали по клетке - красим ее в желтый цвет, иначе - в серый
         if ids not in clicked:
             clicked.add(ids)
-            print('MARKED: ' + str(ids))
             marked.add(ids)
             c.itemconfig(CURRENT, fill="orange")
             x1, y1, x2, y2 = c.coords(ids)
@@ -182,8 +185,6 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
         else:
             clicked.remove(ids)
             c.itemconfig(CURRENT, fill="gray")
-
-    start_time = time.time()
 
     c.bind("<Button-1>", click)
     c.bind("<Button-3>", mark_mine)
@@ -195,6 +196,7 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
     clicked = set()  # Создаем сет для клеточек, по которым мы кликнули
     marked = set()  # Set for marked mines
     clear = set()
+    print(mines)
 
     root.mainloop()
 
@@ -202,4 +204,6 @@ def setup(grid_height, grid_width, mines_num, square_size=50):
 if __name__ == '__main__':
     setup(9, 9, 18)
 else:
-    pass
+    start_time = 0
+    username = ''
+    level = ''
