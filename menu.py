@@ -47,12 +47,12 @@ def display():
     b3.config(command=hard)
     b3.pack()
 
-    b4 = Button(text='All Results',
+    b4 = Button(text='All results',
                 width=15, height=3)
     b4.config(command=results)
     b4.pack()
 
-    b5 = Button(text='My Games',
+    b5 = Button(text='My games',
                 width=15, height=3)
     b5.config(command=self_results)
     b5.pack()
